@@ -100,6 +100,23 @@ func (l Limiter) AllowN(
 		return nil, err
 	}
 
+	func() {
+		rate_limit_key := redisPrefix + key
+		burst := limit.Burst
+		rate := limit.Rate
+		period := limit.Period.Seconds()
+		cost := n
+		fmt.Println("rate_limit_key", rate_limit_key, "burst", burst, "rate", rate, "period", period, "cost", cost)
+
+		emission_interval := float64(period) / float64(rate)
+		increment := float64(emission_interval) * float64(cost)
+		burst_offset := float64(emission_interval) * float64(burst)
+
+		fmt.Println("emission_interval", emission_interval, "increment", increment, "burst_offset", burst_offset)
+
+		fmt.Println("---------------------------------------")
+	}()
+
 	values = v.([]interface{})
 
 	retryAfter, err := strconv.ParseFloat(values[2].(string), 64)
